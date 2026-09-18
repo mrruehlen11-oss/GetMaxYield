@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efficiency Assessment Report — SteadyForge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* === BASE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --forge-orange: #E8721C;
+            --forge-amber: #F5A623;
+            --forge-dark: #0A0A0A;
+            --forge-charcoal: #141414;
+            --forge-slate: #1E1E1E;
+            --forge-steel: #2A2A2A;
+            --text-primary: #F0EDE8;
+            --text-secondary: #9A9590;
+            --text-dim: #605C57;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--forge-dark); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* === NAV === */
+        nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.95); border-bottom: 1px solid rgba(232,114,28,0.08); position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .logo span { color: var(--forge-orange); }
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-print { background: var(--forge-orange); color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.88rem; border: none; padding: 10px 20px; cursor: pointer; letter-spacing: -0.2px; transition: background 0.2s; }
+        .btn-print:hover { background: #d4651a; }
+        .btn-new { font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; padding: 10px 16px; border: 1px solid var(--forge-steel); transition: color 0.2s, border-color 0.2s; }
+        .btn-new:hover { color: var(--text-primary); border-color: rgba(232,114,28,0.3); }
+
+        /* === LOADING === */
+        #loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 20px; }
+        .loading-ring { width: 60px; height: 60px; border: 3px solid rgba(232,114,28,0.15); border-top-color: var(--forge-orange); border-radius: 50%; animation: spin 1.2s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading-screen p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* === REPORT === */
+        #report-content { display: none; max-width: 900px; margin: 0 auto; padding: 60px 40px 100px; }
+
+        /* HEADER */
+        .report-header { padding-bottom: 48px; border-bottom: 1px solid var(--forge-steel); margin-bottom: 56px; }
+        .report-meta { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--forge-orange); margin-bottom: 20px; font-weight: 500; }
+        .report-header h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 24px; }
+        .report-header h1 em { font-style: normal; color: var(--forge-orange); }
+        .report-company-info { display: flex; flex-wrap: wrap; gap: 32px; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .info-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+        .info-value { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+
+        /* SCORE */
+        .score-banner { background: var(--forge-charcoal); border-left: 4px solid var(--forge-orange); padding: 40px 48px; margin-bottom: 56px; display: flex; align-items: center; gap: 48px; flex-wrap: wrap; }
+        .score-block { text-align: center; flex-shrink: 0; }
+        .score-number { font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+        .score-out-of { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); }
+        .score-bar-container { flex: 1; min-width: 200px; }
+        .score-bar-label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .score-bar-label span { font-size: 0.78rem; color: var(--text-dim); }
+        .score-bar { height: 6px; background: var(--forge-steel); position: relative; }
+        .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--forge-orange), var(--forge-amber)); transition: width 1.5s ease; }
+        .score-detail { flex: 1; min-width: 200px; }
+        .score-detail .savings { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--forge-orange); margin-bottom: 4px; letter-spacing: -0.5px; }
+        .score-detail .savings-label { font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .score-detail .timeline { font-size: 0.88rem; color: var(--text-secondary); }
+        .score-detail .timeline strong { color: var(--text-primary); }
+
+        /* SECTIONS */
+        .report-section { margin-bottom: 64px; }
+        .report-section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--forge-steel); }
+        .section-num-sm { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--forge-orange); font-weight: 500; }
+        .section-heading { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.3px; }
+        .summary-text p { font-size: 1rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 16px; }
+
+        /* FINDINGS */
+        .findings-table { width: 100%; border-collapse: collapse; }
+        .findings-table th { text-align: left; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); padding: 8px 16px; background: var(--forge-charcoal); font-weight: 500; }
+        .findings-table th:first-child { padding-left: 20px; }
+        .findings-table td { padding: 16px; border-bottom: 1px solid var(--forge-steel); font-size: 0.9rem; vertical-align: top; }
+        .findings-table td:first-child { padding-left: 20px; }
+        .findings-table tr:last-child td { border-bottom: none; }
+        .finding-area { font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .finding-issue { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; }
+        .finding-impact { color: var(--text-secondary); font-size: 0.88rem; min-width: 160px; }
+        .severity-badge { display: inline-block; font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; padding: 3px 10px; font-family: 'Space Grotesk', sans-serif; }
+        .severity-critical { background: rgba(239,68,68,0.15); color: #f87171; }
+        .severity-high { background: rgba(232,114,28,0.15); color: var(--forge-orange); }
+        .severity-medium { background: rgba(245,166,35,0.12); color: var(--forge-amber); }
+        .severity-low { background: rgba(148,163,184,0.12); color: #94a3b8; }
+
+        /* RECOMMENDATIONS */
+        .recommendations-list { display: flex; flex-direction: column; gap: 16px; }
+        .rec-card { background: var(--forge-charcoal); padding: 32px; border: 1px solid var(--forge-steel); transition: border-color 0.3s; position: relative; }
+        .rec-card:hover { border-color: rgba(232,114,28,0.2); }
+        .rec-priority { position: absolute; top: 32px; right: 32px; font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: rgba(232,114,28,0.1); line-height: 1; }
+        .rec-header { margin-bottom: 12px; padding-right: 60px; }
+        .rec-category { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--forge-orange); font-weight: 500; margin-bottom: 6px; }
+        .rec-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 12px; }
+        .rec-description { font-size: 0.9rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 24px; }
+        .rec-metrics { display: flex; flex-wrap: wrap; gap: 24px; }
+        .rec-metric { display: flex; flex-direction: column; gap: 3px; }
+        .rec-metric-label { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); }
+        .rec-metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+        .rec-metric-value.roi { color: var(--forge-orange); }
+        .difficulty-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .diff-Low .difficulty-dot { background: #22c55e; }
+        .diff-Medium .difficulty-dot { background: var(--forge-amber); }
+        .diff-High .difficulty-dot { background: #ef4444; }
+
+        /* LOCKED CONTENT */
+        .locked-overlay { position: relative; }
+        .locked-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, var(--forge-dark) 70%); pointer-events: none; }
+        .locked-row td { filter: blur(5px); user-select: none; pointer-events: none; }
+        .locked-card { filter: blur(6px); user-select: none; pointer-events: none; }
+
+        /* UPGRADE CTA */
+        .upgrade-banner { background: linear-gradient(135deg, var(--forge-charcoal) 0%, rgba(232,114,28,0.08) 100%); border: 1px solid rgba(232,114,28,0.25); padding: 48px; text-align: center; margin: 48px 0; }
+        .upgrade-banner h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+        .upgrade-banner p { font-size: 0.95rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 8px; line-height: 1.7; }
+        .upgrade-banner .price { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--forge-orange); margin: 24px 0 8px; }
+        .upgrade-banner .price-compare { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; }
+        .upgrade-banner .price-compare s { color: var(--text-dim); }
+        .upgrade-btn { display: inline-block; background: var(--forge-orange); color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.05rem; padding: 16px 40px; border: none; cursor: pointer; letter-spacing: -0.2px; transition: background 0.2s, transform 0.1s; text-decoration: none; }
+        .upgrade-btn:hover { background: #d4651a; }
+        .upgrade-btn:active { transform: scale(0.98); }
+        .upgrade-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .upgrade-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 12px; }
+
+        /* PHASE 3 CTA */
+        .phase3-banner { background: var(--forge-charcoal); border: 1px solid var(--forge-steel); padding: 48px; text-align: center; margin-top: 48px; }
+        .phase3-banner h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
+        .phase3-banner p { font-size: 0.92rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; line-height: 1.7; }
+        .phase3-btn { display: inline-block; background: transparent; color: var(--forge-orange); font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; padding: 14px 32px; border: 2px solid var(--forge-orange); cursor: pointer; letter-spacing: -0.2px; transition: all 0.2s; text-decoration: none; }
+        .phase3-btn:hover { background: var(--forge-orange); color: white; }
+
+        /* FOOTER */
+        .report-footer { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--forge-steel); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; }
+        .report-footer-brand { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; }
+        .report-footer-brand span { color: var(--forge-orange); }
+        .report-footer-text { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+
+        /* ERROR */
+        #error-screen { display: none; text-align: center; padding: 80px 40px; }
+        #error-screen h2 { font-size: 1.8rem; margin-bottom: 12px; }
+        #error-screen p { color: var(--text-secondary); margin-bottom: 24px; }
+
+        /* PRINT */
+        @media print {
+            :root { --forge-orange: #d4651a; --forge-dark: #ffffff; --forge-charcoal: #f5f5f5; --forge-slate: #eeeeee; --forge-steel: #dddddd; --text-primary: #111111; --text-secondary: #444444; --text-dim: #777777; }
+            body { background: white; color: #111; }
+            nav { display: none; }
+            #loading-screen { display: none !important; }
+            #report-content { display: block !important; padding: 40px 0; max-width: 100%; }
+            .upgrade-banner, .phase3-banner { display: none; }
+            .score-banner { border: 1px solid #ddd; background: #f9f9f9; }
+            .rec-card { border: 1px solid #ddd; background: #f9f9f9; break-inside: avoid; }
+            .findings-table th { background: #f0f0f0; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 16px 20px; }
+            #report-content { padding: 40px 20px 60px; }
+            .score-banner { padding: 24px; gap: 24px; }
+            .score-number { font-size: 3.5rem; }
+            .findings-table { font-size: 0.82rem; }
+            .findings-table th, .findings-table td { padding: 10px; }
+            .rec-card { padding: 24px; }
+            .upgrade-banner, .phase3-banner { padding: 32px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Steady<span>Forge</span></a>
+    <div class="nav-actions">
+        <a href="/assess" class="btn-new">New Assessment</a>
+        <button class="btn-print" onclick="window.print()" id="print-btn" style="display:none">Save as PDF</button>
+    </div>
+</nav>
+
+<div id="loading-screen">
+    <div class="loading-ring"></div>
+    <p>Loading your report&hellip;</p>
+</div>
+
+<div id="error-screen">
+    <h2>Report not found</h2>
+    <p>This assessment may still be processing or could not be found.</p>
+    <a href="/assess" style="color: var(--forge-orange);">Start a new assessment</a>
+</div>
+
+<div id="report-content"></div>
+
+<script>
+(function() {
+    var pathParts = window.location.pathname.split('/');
+    var assessmentId = pathParts[pathParts.length - 1];
+
+    if (!assessmentId || isNaN(parseInt(assessmentId))) {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('error-screen').style.display = 'block';
+        return;
+    }
+
+    fetch('/api/reports/' + assessmentId)
+        .then(function(r) {
+            if (!r.ok) throw new Error('Not found');
+            return r.json();
+        })
+        .then(function(data) {
+            renderReport(data);
+        })
+        .catch(function() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'block';
+        });
+
+    function esc(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(String(str)));
+        return div.innerHTML;
+    }
+
+    function renderScore(score) {
+        if (score >= 80) return { color: '#22c55e', label: 'Good' };
+        if (score >= 60) return { color: 'var(--forge-amber)', label: 'Fair' };
+        if (score >= 40) return { color: 'var(--forge-orange)', label: 'Below Average' };
+        return { color: '#ef4444', label: 'Needs Attention' };
+    }
+
+    function renderSeverityBadge(severity) {
+        var s = (severity || 'medium').toLowerCase();
+        return '<span class="severity-badge severity-' + esc(s) + '">' + esc(s.charAt(0).toUpperCase() + s.slice(1)) + '</span>';
+    }
+
+    function renderReport(data) {
+        var assessment = data.assessment;
+        var report = data.report;
+        var phase = data.phase;
+        var phase2Paid = data.phase_2_paid;
+        var phase3Paid = data.phase_3_paid;
+        var score = report.efficiency_score || 0;
+        var scoreStyle = renderScore(score);
+        var reportDate = new Date(assessment.created_at).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        var html = '';
+
+        // === REPORT HEADER ===
+        html += '<div class="report-header">';
+        html += '<div class="report-meta">Operations Efficiency Assessment &mdash; ' + (phase2Paid ? 'Full Report' : 'Preliminary Analysis') + '</div>';
+        html += '<h1>Efficiency Report:<br><em>' + esc(assessment.company_name) + '</em></h1>';
+        html += '<div class="report-company-info">';
+        html += '<div class="info-item"><div class="info-label">Industry</div><div class="info-value">' + esc(assessment.industry) + '</div></div>';
+        html += '<div class="info-item"><div class="info-label">Employees</div><div class="info-value">' + esc(assessment.employee_count) + '</div></div>';
+        if (assessment.annual_revenue) {
+            html += '<div class="info-item"><div class="info-label">Revenue</div><div class="info-value">' + esc(assessment.annual_revenue) + '</div></div>';
+        }
+        html += '<div class="info-item"><div class="info-label">Report Date</div><div class="info-value">' + esc(reportDate) + '</div></div>';
+        html += '</div></div>';
+
+        // === SCORE BANNER (always shown) ===
+        html += '<div class="score-banner">';
+        html += '<div class="score-block">';
+        html += '<div class="score-number" style="color:' + scoreStyle.color + '">' + esc(String(score)) + '</div>';
+        html += '<div class="score-out-of">out of 100 &mdash; ' + esc(scoreStyle.label) + '</div>';
+        html += '</div>';
+        html += '<div class="score-bar-container">';
+        html += '<div class="score-bar-label"><span>Efficiency Score</span><span>' + esc(String(score)) + '%</span></div>';
+        html += '<div class="score-bar"><div class="score-bar-fill" id="score-fill" style="width:0%"></div></div>';
+        html += '</div>';
+        html += '<div class="score-detail">';
+        html += '<div class="savings">' + esc(report.total_potential_savings || 'See full report') + '</div>';
+        html += '<div class="savings-label">Projected Annual Savings</div>';
+        if (phase2Paid && report.implementation_timeline) {
+            html += '<div class="timeline">Full implementation: <strong>' + esc(report.implementation_timeline) + '</strong></div>';
+        }
+        html += '</div></div>';
+
+        // === EXECUTIVE SUMMARY ===
+        html += '<div class="report-section">';
+        html += '<div class="report-section-header">';
+        html += '<div class="section-num-sm">01</div>';
+        html += '<div class="section-heading">Executive Summary</div>';
+        html += '</div>';
+        html += '<div class="summary-text">';
+        if (report.executive_summary) {
+            var paragraphs = report.executive_summary.split('\n').filter(function(p) { return p.trim(); });
+            paragraphs.forEach(function(p) {
+                html += '<p>' + esc(p.trim()) + '</p>';
+            });
+        }
+        if (!phase2Paid) {
+            html += '<p style="color:var(--text-dim);font-style:italic;margin-top:8px;">Full analysis available in the complete report.</p>';
+        }
+        html += '</div></div>';
+
+        // === KEY FINDINGS ===
+        html += '<div class="report-section">';
+        html += '<div class="report-section-header">';
+        html += '<div class="section-num-sm">02</div>';
+        html += '<div class="section-heading">Key Findings</div>';
+        if (!phase2Paid && data.total_findings) {
+            html += '<span style="font-size:0.8rem;color:var(--text-dim);margin-left:auto;">' + data.total_findings + ' findings identified</span>';
+        }
+        html += '</div>';
+
+        var findings = report.findings || [];
+        if (findings.length > 0) {
+            if (phase2Paid) {
+                // FULL findings table
+                var sorted = findings.slice().sort(function(a, b) {
+                    var order = { critical: 0, high: 1, medium: 2, low: 3 };
+                    return (order[a.severity] || 2) - (order[b.severity] || 2);
+                });
+                html += '<table class="findings-table"><thead><tr>';
+                html += '<th>Area &amp; Issue</th><th>Business Impact</th><th>Severity</th>';
+                html += '</tr></thead><tbody>';
+                sorted.forEach(function(f) {
+                    html += '<tr><td><div class="finding-area">' + esc(f.area) + '</div>';
+                    html += '<div class="finding-issue">' + esc(f.issue) + '</div></td>';
+                    html += '<td class="finding-impact">' + esc(f.impact) + '</td>';
+                    html += '<td>' + renderSeverityBadge(f.severity) + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                // TEASER findings — area + severity only, details hidden
+                html += '<table class="findings-table"><thead><tr>';
+                html += '<th>Area</th><th>Details</th><th>Severity</th>';
+                html += '</tr></thead><tbody>';
+                findings.forEach(function(f) {
+                    html += '<tr><td><div class="finding-area">' + esc(f.area) + '</div></td>';
+                    html += '<td class="finding-impact" style="color:var(--text-dim);font-style:italic;">Available in full report</td>';
+                    html += '<td>' + renderSeverityBadge(f.severity) + '</td></tr>';
+                });
+                // Show locked placeholder rows for remaining findings
+                if (data.total_findings && data.total_findings > findings.length) {
+                    var remaining = data.total_findings - findings.length;
+                    for (var i = 0; i < Math.min(remaining, 3); i++) {
+                        html += '<tr class="locked-row"><td><div class="finding-area" style="filter:blur(5px);">Operational Area</div></td>';
+                        html += '<td style="filter:blur(5px);">Impact details locked</td>';
+                        html += '<td style="filter:blur(5px);">' + renderSeverityBadge('medium') + '</td></tr>';
+                    }
+                }
+                html += '</tbody></table>';
+            }
+        }
+        html += '</div>';
+
+        // === RECOMMENDATIONS ===
+        html += '<div class="report-section">';
+        html += '<div class="report-section-header">';
+        html += '<div class="section-num-sm">03</div>';
+        html += '<div class="section-heading">Prioritized Recommendations</div>';
+        if (!phase2Paid && data.total_recommendations) {
+            html += '<span style="font-size:0.8rem;color:var(--text-dim);margin-left:auto;">' + data.total_recommendations + ' recommendations</span>';
+        }
+        html += '</div>';
+
+        var recs = report.recommendations || [];
+        if (recs.length > 0) {
+            html += '<div class="recommendations-list">';
+            if (phase2Paid) {
+                // FULL recommendations
+                recs.forEach(function(r) {
+                    var diff = r.difficulty || 'Medium';
+                    html += '<div class="rec-card">';
+                    html += '<div class="rec-priority">' + esc(r.priority || '') + '</div>';
+                    html += '<div class="rec-header">';
+                    html += '<div class="rec-category">' + esc(r.category || 'Process Improvement') + '</div>';
+                    html += '<div class="rec-title">' + esc(r.title) + '</div>';
+                    html += '</div>';
+                    html += '<div class="rec-description">' + esc(r.description) + '</div>';
+                    html += '<div class="rec-metrics">';
+                    html += '<div class="rec-metric"><div class="rec-metric-label">Projected ROI</div><div class="rec-metric-value roi">' + esc(r.projected_roi) + '</div></div>';
+                    html += '<div class="rec-metric"><div class="rec-metric-label">Timeframe</div><div class="rec-metric-value">' + esc(r.timeframe) + '</div></div>';
+                    html += '<div class="rec-metric diff-' + esc(diff) + '"><div class="rec-metric-label">Implementation</div><div class="rec-metric-value"><span class="difficulty-dot"></span>' + esc(diff) + ' Difficulty</div></div>';
+                    html += '</div></div>';
+                });
+            } else {
+                // TEASER — show titles only, rest locked
+                recs.forEach(function(r) {
+                    html += '<div class="rec-card">';
+                    html += '<div class="rec-priority">' + esc(r.priority || '') + '</div>';
+                    html += '<div class="rec-header">';
+                    html += '<div class="rec-category">' + esc(r.category || 'Process Improvement') + '</div>';
+                    html += '<div class="rec-title">' + esc(r.title) + '</div>';
+                    html += '</div>';
+                    html += '<div class="rec-description" style="color:var(--text-dim);font-style:italic;">Detailed implementation steps, projected ROI, and timeline available in the full report.</div>';
+                    html += '<div class="rec-metrics" style="filter:blur(5px);user-select:none;pointer-events:none;">';
+                    html += '<div class="rec-metric"><div class="rec-metric-label">Projected ROI</div><div class="rec-metric-value roi">$XX,XXX - $XX,XXX/yr</div></div>';
+                    html += '<div class="rec-metric"><div class="rec-metric-label">Timeframe</div><div class="rec-metric-value">X-X weeks</div></div>';
+                    html += '<div class="rec-metric"><div class="rec-metric-label">Implementation</div><div class="rec-metric-value">Difficulty</div></div>';
+                    html += '</div></div>';
+                });
+                // Locked placeholder cards for remaining recs
+                if (data.total_recommendations && data.total_recommendations > recs.length) {
+                    var remRecs = data.total_recommendations - recs.length;
+                    for (var j = 0; j < Math.min(remRecs, 3); j++) {
+                        html += '<div class="rec-card locked-card">';
+                        html += '<div class="rec-header"><div class="rec-category">Recommendation</div><div class="rec-title">Locked Recommendation</div></div>';
+                        html += '<div class="rec-description">Details available in the full report.</div>';
+                        html += '</div>';
+                    }
+                }
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // === PHASE 1: UPGRADE CTA ===
+        if (!phase2Paid) {
+            html += '<div class="upgrade-banner">';
+            html += '<h3>Unlock Your Complete Report</h3>';
+            html += '<p>Get the full diagnosis with detailed findings, step-by-step recommendations, projected ROI for each change, and your implementation roadmap.</p>';
+            html += '<p style="font-size:0.85rem;color:var(--text-dim);">Traditional consulting firms charge $10,000+ for this level of analysis.</p>';
+            html += '<div class="price">$4,997</div>';
+            html += '<div class="price-compare"><s>$10,000+</s> traditional consulting assessment</div>';
+            html += '<button class="upgrade-btn" id="upgrade-btn" onclick="startUpgrade()">Continue with SteadyForge &rarr;</button>';
+            html += '<div class="upgrade-note">Secure payment. Instant access after purchase.</div>';
+            html += '</div>';
+        }
+
+        // === PHASE 2 PAID: PHASE 3 CTA ===
+        if (phase2Paid && !phase3Paid) {
+            html += '<div class="phase3-banner">';
+            html += '<h3>Ready to Implement These Changes?</h3>';
+            html += '<p>Our team comes on-site for a focused 2-week engagement. We work alongside your people to implement every recommendation, train staff, and verify results before we leave.</p>';
+            html += '<a href="/phase3/' + esc(String(assessment.id)) + '" class="phase3-btn">Schedule On-Site Implementation &rarr;</a>';
+            html += '</div>';
+        }
+
+        // === FOOTER ===
+        html += '<div class="report-footer">';
+        html += '<div>';
+        html += '<div class="report-footer-brand">Steady<span>Forge</span></div>';
+        html += '<div class="report-footer-text">AI-powered assessment &mdash; ' + esc(reportDate) + '</div>';
+        html += '<div class="report-footer-text" style="margin-top:4px">This report is confidential and intended for the recipient only.</div>';
+        html += '</div>';
+        html += '</div>';
+
+        document.getElementById('report-content').innerHTML = html;
+        document.title = 'Efficiency Assessment \u2014 ' + assessment.company_name + ' \u2014 SteadyForge';
+
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('report-content').style.display = 'block';
+
+        // Show print button only for paid reports
+        if (phase2Paid) {
+            document.getElementById('print-btn').style.display = 'block';
+        }
+
+        // Animate score bar
+        requestAnimationFrame(function() {
+            setTimeout(function() {
+                var fill = document.getElementById('score-fill');
+                if (fill) fill.style.width = score + '%';
+            }, 200);
+        });
+    }
+
+    // Upgrade payment handler
+    window.startUpgrade = function() {
+        var btn = document.getElementById('upgrade-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Processing\u2026';
+        }
+
+        fetch('/api/payments/create-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assessment_id: parseInt(assessmentId, 10), phase: 2 })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.already_paid && data.redirect) {
+                window.location.href = data.redirect;
+            } else if (data.checkout_url) {
+                window.location.href = data.checkout_url;
+            } else {
+                throw new Error(data.error || 'Failed to start payment');
+            }
+        })
+        .catch(function(err) {
+            alert('Payment error: ' + err.message + '. Please try again.');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Continue with SteadyForge \u2192';
+            }
+        });
+    };
+})();
+</script>
+
+</body>
+</html>

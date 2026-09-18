@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Operations Assessment — MaxYield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --forge-orange: #E8721C;
+            --forge-amber: #F5A623;
+            --forge-dark: #0A0A0A;
+            --forge-charcoal: #141414;
+            --forge-slate: #1E1E1E;
+            --forge-steel: #2A2A2A;
+            --text-primary: #F0EDE8;
+            --text-secondary: #9A9590;
+            --text-dim: #605C57;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--forge-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,10,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(232,114,28,0.08);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--forge-orange); }
+
+        .nav-back {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover { color: var(--text-primary); }
+
+        /* MAIN LAYOUT */
+        main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+
+        .page-header {
+            margin-bottom: 56px;
+        }
+
+        .page-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--forge-orange);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .page-header h1 em {
+            font-style: normal;
+            color: var(--forge-orange);
+        }
+
+        .page-header p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 560px;
+        }
+
+        /* FORM SECTIONS */
+        .form-section {
+            margin-bottom: 48px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--forge-steel);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: rgba(232,114,28,0.12);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        /* FORM FIELDS */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .field-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        label .required {
+            color: var(--forge-orange);
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select,
+        textarea {
+            background: var(--forge-slate);
+            border: 1px solid var(--forge-steel);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: rgba(232,114,28,0.5);
+            background: #222222;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23605C57' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: var(--forge-slate);
+            color: var(--text-primary);
+        }
+
+        /* FILE UPLOAD */
+        .upload-zone {
+            border: 1px dashed var(--forge-steel);
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: rgba(232,114,28,0.4);
+            background: rgba(232,114,28,0.03);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .upload-zone p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .upload-zone small {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .upload-zone .upload-cta {
+            color: var(--forge-orange);
+            font-weight: 500;
+        }
+
+        .file-list {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--forge-slate);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+        }
+
+        .file-item-name {
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-item-remove {
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 1rem;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .file-item-remove:hover { color: var(--forge-orange); }
+
+        /* SUBMIT */
+        .submit-section {
+            padding-top: 16px;
+        }
+
+        .submit-btn {
+            background: var(--forge-orange);
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            padding: 16px 40px;
+            cursor: pointer;
+            letter-spacing: -0.2px;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+
+        .submit-btn:hover:not(:disabled) { background: #d4651a; }
+        .submit-btn:active:not(:disabled) { transform: scale(0.99); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .submit-note {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .error-msg {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #f87171;
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* PROCESSING STATE */
+        #processing-screen {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .processing-animation {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 32px;
+            position: relative;
+        }
+
+        .processing-ring {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(232,114,28,0.15);
+            border-top-color: var(--forge-orange);
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #processing-screen h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        #processing-screen p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .processing-steps {
+            margin-top: 40px;
+            text-align: left;
+            max-width: 360px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .processing-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            border-bottom: 1px solid rgba(42,42,42,0.6);
+        }
+
+        .processing-step:last-child { border-bottom: none; }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--forge-steel);
+            flex-shrink: 0;
+        }
+
+        .processing-step.active .step-dot {
+            background: var(--forge-orange);
+            box-shadow: 0 0 8px rgba(232,114,28,0.5);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .processing-step.done .step-dot { background: #22c55e; }
+        .processing-step.active { color: var(--text-primary); }
+        .processing-step.done { color: var(--text-secondary); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* MOBILE */
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            main { padding: 100px 20px 60px; }
+            .field-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Max<span>Yield</span></a>
+    <a href="/" class="nav-back">&#8592; Back to home</a>
+</nav>
+
+<main>
+    <div id="form-screen">
+        <div class="page-header">
+            <div class="page-label">Free Assessment</div>
+            <h1>Tell us about your<br><em>operation</em>.</h1>
+            <p>Fill out the form below. Our AI analyzes your operational data and generates a prioritized efficiency report with projected ROI. Takes about 2 minutes to complete.</p>
+        </div>
+
+        <form id="assessment-form" enctype="multipart/form-data">
+
+            <div class="form-section">
+                <div class="section-num">01</div>
+                <div class="section-title">Company Information</div>
+                <div class="section-desc">Basic info about your organization. This helps us calibrate the analysis to your scale.</div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label>Company Name <span class="required">*</span></label>
+                        <input type="text" name="company_name" placeholder="Acme Manufacturing Co." required>
+                    </div>
+                    <div class="field">
+                        <label>Industry <span class="required">*</span></label>
+                        <select name="industry" required>
+                            <option value="" disabled selected>Select your industry</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Warehouse & Distribution">Warehouse & Distribution</option>
+                            <option value="Industrial Services">Industrial Services</option>
+                            <option value="Food & Beverage Production">Food & Beverage Production</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Oil & Gas">Oil & Gas</option>
+                            <option value="Mining">Mining</option>
+                            <option value="Agriculture">Agriculture</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Other Industrial">Other Industrial</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label>Number of Employees <span class="required">*</span></label>
+                        <input type="number" name="employee_count" placeholder="e.g. 85" min="1" required>
+                    </div>
+                    <div class="field">
+                        <label>Approximate Annual Revenue</label>
+                        <select name="annual_revenue">
+                            <option value="" selected>Prefer not to say</option>
+                            <option value="Under $1M">Under $1M</option>
+                            <option value="$1M - $5M">$1M – $5M</option>
+                            <option value="$5M - $15M">$5M – $15M</option>
+                            <option value="$15M - $50M">$15M – $50M</option>
+                            <option value="$50M - $100M">$50M – $100M</option>
+                            <option value="Over $100M">Over $100M</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-num">02</div>
+                <div class="section-title">Your Contact</div>
+                <div class="section-desc">We'll send the finished report to this email. We don't spam, ever.</div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label>Your Name</label>
+                        <input type="text" name="contact_name" placeholder="John Smith">
+                    </div>
+                    <div class="field">
+                        <label>Email Address</label>
+                        <input type="email" name="contact_email" placeholder="john@acmemfg.com">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-num">03</div>
+                <div class="section-title">Operational Pain Points</div>
+                <div class="section-desc">Be specific. The more detail you provide, the more accurate and useful the analysis will be. What keeps you up at night?</div>
+
+                <div class="field-row single">
+                    <div class="field">
+                        <label>Describe Your Key Challenges <span class="required">*</span></label>
+                        <textarea name="pain_points" placeholder="Example: Our production line runs at about 65% capacity but we can't figure out where the bottlenecks are. We have a lot of unplanned downtime, especially on the third shift. Inventory management is a mess — we either over-order or run out. Scrap rate is around 8% and we know that's too high. Staff turnover in certain departments is killing us..." rows="6" required></textarea>
+                    </div>
+                </div>
+
+                <div class="field-row single">
+                    <div class="field">
+                        <label>Current Tools & Systems</label>
+                        <textarea name="current_tools" placeholder="Example: We use QuickBooks for accounting, Excel spreadsheets for production scheduling, a basic ERP from 2015 (Epicor), and paper-based quality checklists..." rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="field-row single">
+                    <div class="field">
+                        <label>Anything Else We Should Know</label>
+                        <textarea name="additional_context" placeholder="Seasonal patterns, recent changes, specific goals, constraints, previous improvement attempts..." rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-num">04</div>
+                <div class="section-title">Supporting Documents</div>
+                <div class="section-desc">Optional but helpful. Spreadsheets, production reports, org charts, or any data you have. PDF, Excel, CSV, Word — all accepted.</div>
+
+                <div class="upload-zone" id="upload-zone">
+                    <input type="file" id="file-input" name="files" multiple accept=".pdf,.xlsx,.xls,.csv,.docx,.doc,.txt,.png,.jpg,.jpeg">
+                    <div class="upload-icon">&#128196;</div>
+                    <p><span class="upload-cta">Click to upload</span> or drag and drop</p>
+                    <small>PDF, Excel, CSV, Word, Images &mdash; up to 50MB each</small>
+                </div>
+                <div class="file-list" id="file-list"></div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    Run My Efficiency Assessment &#8594;
+                </button>
+                <p class="submit-note">Free. No account required. Report delivered in 1-2 minutes.</p>
+                <div class="error-msg" id="error-msg"></div>
+            </div>
+        </form>
+    </div>
+
+    <div id="processing-screen">
+        <div class="processing-animation">
+            <div class="processing-ring"></div>
+        </div>
+        <h2>Analyzing your operation&hellip;</h2>
+        <p>Our AI is working through your data. This takes about 60-90 seconds. Don't close this tab.</p>
+
+        <div class="processing-steps">
+            <div class="processing-step active" id="step-1">
+                <div class="step-dot"></div>
+                <span>Ingesting operational data</span>
+            </div>
+            <div class="processing-step" id="step-2">
+                <div class="step-dot"></div>
+                <span>Benchmarking against industry data</span>
+            </div>
+            <div class="processing-step" id="step-3">
+                <div class="step-dot"></div>
+                <span>Identifying efficiency gaps</span>
+            </div>
+            <div class="processing-step" id="step-4">
+                <div class="step-dot"></div>
+                <span>Calculating ROI projections</span>
+            </div>
+            <div class="processing-step" id="step-5">
+                <div class="step-dot"></div>
+                <span>Generating your report</span>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+(function() {
+    var form = document.getElementById('assessment-form');
+    var submitBtn = document.getElementById('submit-btn');
+    var errorMsg = document.getElementById('error-msg');
+    var formScreen = document.getElementById('form-screen');
+    var processingScreen = document.getElementById('processing-screen');
+    var fileInput = document.getElementById('file-input');
+    var fileList = document.getElementById('file-list');
+    var uploadZone = document.getElementById('upload-zone');
+
+    var selectedFiles = [];
+
+    // File handling
+    fileInput.addEventListener('change', function() {
+        Array.from(this.files).forEach(addFile);
+        this.value = '';
+    });
+
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        Array.from(e.dataTransfer.files).forEach(addFile);
+    });
+
+    function addFile(file) {
+        if (selectedFiles.find(function(f) { return f.name === file.name; })) return;
+        selectedFiles.push(file);
+        renderFileList();
+    }
+
+    function removeFile(name) {
+        selectedFiles = selectedFiles.filter(function(f) { return f.name !== name; });
+        renderFileList();
+    }
+
+    function renderFileList() {
+        fileList.innerHTML = '';
+        selectedFiles.forEach(function(file) {
+            var item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = '<span class="file-item-name">' + escapeHtml(file.name) + ' (' + formatBytes(file.size) + ')</span>' +
+                '<span class="file-item-remove" onclick="removeFileByName(\'' + escapeHtml(file.name).replace(/'/g, "\\'") + '\')">&times;</span>';
+            fileList.appendChild(item);
+        });
+    }
+
+    window.removeFileByName = function(name) {
+        removeFile(name);
+    };
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    // Processing step animation
+    var steps = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'];
+    var currentStep = 0;
+    var stepInterval = null;
+
+    function advanceStep() {
+        if (currentStep < steps.length) {
+            if (currentStep > 0) {
+                var prevEl = document.getElementById(steps[currentStep - 1]);
+                prevEl.classList.remove('active');
+                prevEl.classList.add('done');
+            }
+            var el = document.getElementById(steps[currentStep]);
+            el.classList.add('active');
+            currentStep++;
+        }
+    }
+
+    function startProcessingAnimation() {
+        currentStep = 0;
+        steps.forEach(function(s) {
+            var el = document.getElementById(s);
+            el.classList.remove('active', 'done');
+        });
+        advanceStep();
+        stepInterval = setInterval(advanceStep, 18000);
+    }
+
+    function stopProcessingAnimation() {
+        if (stepInterval) {
+            clearInterval(stepInterval);
+            stepInterval = null;
+        }
+    }
+
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.style.display = 'block';
+    }
+
+    // Polling with retry limit
+    function startPolling(assessmentId) {
+        var retries = 0;
+        var maxRetries = 60;
+
+        function poll() {
+            if (retries >= maxRetries) {
+                stopProcessingAnimation();
+                processingScreen.style.display = 'none';
+                formScreen.style.display = 'block';
+                showError('Analysis is taking longer than expected. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Run My Efficiency Assessment \u2192';
+                return;
+            }
+            retries++;
+            fetch('/api/assessments/' + assessmentId + '/status')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.status === 'complete') {
+                        stopProcessingAnimation();
+                        steps.forEach(function(s) {
+                            document.getElementById(s).classList.remove('active');
+                            document.getElementById(s).classList.add('done');
+                        });
+                        setTimeout(function() {
+                            window.location.href = '/report/' + assessmentId;
+                        }, 600);
+                    } else if (data.status === 'error') {
+                        stopProcessingAnimation();
+                        processingScreen.style.display = 'none';
+                        formScreen.style.display = 'block';
+                        showError('Analysis failed. Please try again.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Run My Efficiency Assessment \u2192';
+                    } else {
+                        setTimeout(poll, 3000);
+                    }
+                })
+                .catch(function() {
+                    setTimeout(poll, 4000);
+                });
+        }
+
+        setTimeout(poll, 3000);
+    }
+
+    // Form submit
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        errorMsg.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting\u2026';
+
+        var fd = new FormData(form);
+        fd.delete('files');
+        selectedFiles.forEach(function(file) { fd.append('files', file); });
+
+        try {
+            var resp = await fetch('/api/assessments', { method: 'POST', body: fd });
+            var result = await resp.json();
+            if (!resp.ok) throw new Error(result.error || 'Submission failed');
+
+            formScreen.style.display = 'none';
+            processingScreen.style.display = 'block';
+            window.scrollTo(0, 0);
+            startProcessingAnimation();
+            startPolling(result.id);
+        } catch (err) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Run My Efficiency Assessment \u2192';
+            showError(err.message || 'Something went wrong. Please try again.');
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

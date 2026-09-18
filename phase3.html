@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On-Site Implementation — MaxYield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --forge-orange: #E8721C; --forge-amber: #F5A623; --forge-dark: #0A0A0A; --forge-charcoal: #141414; --forge-slate: #1E1E1E; --forge-steel: #2A2A2A; --text-primary: #F0EDE8; --text-secondary: #9A9590; --text-dim: #605C57; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--forge-dark); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+        nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.95); border-bottom: 1px solid rgba(232,114,28,0.08); }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .logo span { color: var(--forge-orange); }
+        .nav-back { font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+        .nav-back:hover { color: var(--text-primary); }
+
+        main { max-width: 700px; margin: 0 auto; padding: 80px 40px 100px; }
+
+        .phase-label { font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase; color: var(--forge-orange); margin-bottom: 16px; font-weight: 500; }
+        h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -1px; line-height: 1.1; margin-bottom: 20px; }
+        h1 em { font-style: normal; color: var(--forge-orange); }
+        .subtitle { font-size: 1rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 48px; max-width: 560px; }
+
+        .includes-section { margin-bottom: 48px; }
+        .includes-title { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; }
+        .includes-list { display: flex; flex-direction: column; gap: 16px; }
+        .include-item { display: flex; gap: 16px; padding: 20px 24px; background: var(--forge-charcoal); border: 1px solid var(--forge-steel); }
+        .include-icon { color: var(--forge-orange); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .include-text h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.2px; }
+        .include-text p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .pricing-card { background: var(--forge-charcoal); border: 1px solid rgba(232,114,28,0.25); padding: 48px; text-align: center; margin-bottom: 32px; }
+        .pricing-card .price { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: var(--forge-orange); margin-bottom: 4px; }
+        .pricing-card .price-sub { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
+        .pricing-card .compare { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px; }
+        .pricing-card .compare s { margin-right: 4px; }
+        .pay-btn { display: inline-block; width: 100%; max-width: 400px; background: var(--forge-orange); color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.05rem; padding: 16px 40px; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        .pay-btn:hover:not(:disabled) { background: #d4651a; }
+        .pay-btn:active:not(:disabled) { transform: scale(0.98); }
+        .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pay-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 12px; }
+
+        .guarantee { text-align: center; padding: 32px; border: 1px solid var(--forge-steel); }
+        .guarantee h4 { font-size: 1rem; margin-bottom: 8px; }
+        .guarantee p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+        .error-msg { background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); color: #f87171; padding: 12px 16px; font-size: 0.88rem; margin-top: 12px; display: none; text-align: center; }
+
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            main { padding: 60px 20px 80px; }
+            .pricing-card { padding: 32px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Max<span>Yield</span></a>
+    <a href="#" class="nav-back" id="back-link">&#8592; Back to report</a>
+</nav>
+
+<main>
+    <div class="phase-label">Phase 3 — On-Site Implementation</div>
+    <h1>Let our team <em>implement</em> the changes.</h1>
+    <p class="subtitle">Your report identified real savings opportunities. Now let our experienced operators come on-site for a focused 2-week engagement to make those changes real.</p>
+
+    <div class="includes-section">
+        <div class="includes-title">What's Included</div>
+        <div class="includes-list">
+            <div class="include-item">
+                <div class="include-icon">&#9670;</div>
+                <div class="include-text">
+                    <h4>Dedicated Implementation Team</h4>
+                    <p>Experienced operators assigned to your facility for the full 2-week engagement. They know your industry and your specific challenges from the assessment.</p>
+                </div>
+            </div>
+            <div class="include-item">
+                <div class="include-icon">&#9670;</div>
+                <div class="include-text">
+                    <h4>Staff Training & Knowledge Transfer</h4>
+                    <p>Your team learns every change we make. When we leave, your people own the process. No dependency on outside consultants.</p>
+                </div>
+            </div>
+            <div class="include-item">
+                <div class="include-icon">&#9670;</div>
+                <div class="include-text">
+                    <h4>Verified Results Before We Leave</h4>
+                    <p>We measure before and after. You see documented proof of improvement before the engagement ends. No guesswork.</p>
+                </div>
+            </div>
+            <div class="include-item">
+                <div class="include-icon">&#9670;</div>
+                <div class="include-text">
+                    <h4>30-Day Post-Implementation Support</h4>
+                    <p>Remote support for 30 days after we leave. Questions, adjustments, troubleshooting — we're a call away.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pricing-card">
+        <div class="price">$24,997</div>
+        <div class="price-sub">2-week on-site implementation engagement</div>
+        <div class="compare"><s>$50,000+</s> traditional consulting on-site</div>
+        <button class="pay-btn" id="pay-btn" onclick="startPhase3()">Secure Your Implementation Slot &rarr;</button>
+        <div class="pay-note">Secure payment. Our team will contact you within 24 hours to schedule.</div>
+        <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <div class="guarantee">
+        <h4>Results Guaranteed</h4>
+        <p>Every engagement comes with our hold harmless agreement. If you implement every step and efficiency doesn't improve, your risk is near zero. Contracts in plain English.</p>
+    </div>
+</main>
+
+<script>
+(function() {
+    var pathParts = window.location.pathname.split('/');
+    var assessmentId = pathParts[pathParts.length - 1];
+
+    // Set back link
+    var backLink = document.getElementById('back-link');
+    if (assessmentId) backLink.href = '/report/' + assessmentId;
+
+    window.startPhase3 = function() {
+        var btn = document.getElementById('pay-btn');
+        var err = document.getElementById('error-msg');
+        err.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Processing\u2026';
+
+        fetch('/api/payments/create-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assessment_id: parseInt(assessmentId, 10), phase: 3 })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.already_paid && data.redirect) {
+                window.location.href = data.redirect;
+            } else if (data.checkout_url) {
+                window.location.href = data.checkout_url;
+            } else {
+                throw new Error(data.error || 'Failed to start payment');
+            }
+        })
+        .catch(function(e) {
+            err.textContent = e.message || 'Payment error. Please try again.';
+            err.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Secure Your Implementation Slot \u2192';
+        });
+    };
+})();
+</script>
+
+</body>
+</html>

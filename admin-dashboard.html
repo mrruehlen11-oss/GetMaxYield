@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — MaxYield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --forge-orange: #E8721C;
+            --forge-amber: #F5A623;
+            --forge-dark: #0A0A0A;
+            --forge-charcoal: #141414;
+            --forge-slate: #1E1E1E;
+            --forge-steel: #2A2A2A;
+            --text-primary: #F0EDE8;
+            --text-secondary: #9A9590;
+            --text-dim: #605C57;
+        }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--forge-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* NAV */
+        nav {
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,10,0.95);
+            border-bottom: 1px solid rgba(232,114,28,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 24px; }
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .logo span { color: var(--forge-orange); }
+        .admin-badge {
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: rgba(232,114,28,0.12);
+            color: var(--forge-orange);
+            padding: 3px 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+        }
+        .logout-btn {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
+        }
+        .logout-btn:hover { color: var(--text-secondary); }
+
+        /* MAIN */
+        main { padding: 48px 40px; max-width: 1200px; margin: 0 auto; }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--forge-charcoal);
+            padding: 24px;
+            border: 1px solid var(--forge-steel);
+        }
+
+        .stat-card-label {
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card-value.orange { color: var(--forge-orange); }
+        .stat-card-value.green { color: #22c55e; }
+        .stat-card-value.amber { color: var(--forge-amber); }
+
+        /* TABLE SECTION */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .section-count {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* TABLE */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            text-align: left;
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            padding: 10px 16px;
+            background: var(--forge-charcoal);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(42,42,42,0.6);
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .company-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .company-contact {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            padding: 3px 10px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .status-pending { background: rgba(148,163,184,0.12); color: #94a3b8; }
+        .status-processing { background: rgba(245,166,35,0.12); color: var(--forge-amber); }
+        .status-complete { background: rgba(34,197,94,0.12); color: #22c55e; }
+        .status-error { background: rgba(239,68,68,0.12); color: #f87171; }
+
+        .action-link {
+            font-size: 0.82rem;
+            color: var(--forge-orange);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .action-link:hover { opacity: 0.7; }
+        .action-link.disabled { color: var(--text-dim); pointer-events: none; }
+
+        .date-cell {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        /* EXPANDED ROW */
+        .detail-row td {
+            padding: 0 !important;
+            border-bottom: none !important;
+        }
+
+        .detail-content {
+            background: var(--forge-slate);
+            padding: 24px;
+            border-bottom: 1px solid var(--forge-steel);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .detail-block label {
+            display: block;
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .detail-block p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p { font-size: 0.88rem; }
+
+        /* LOADING */
+        .table-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 14px 20px; }
+            main { padding: 32px 20px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-left">
+        <a href="/" class="logo">Max<span>Yield</span></a>
+        <span class="admin-badge">Admin</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+</nav>
+
+<main>
+    <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+            <div class="stat-card-label">Total Assessments</div>
+            <div class="stat-card-value" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Completed</div>
+            <div class="stat-card-value green" id="stat-complete">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">Processing</div>
+            <div class="stat-card-value amber" id="stat-processing">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-label">This Week</div>
+            <div class="stat-card-value orange" id="stat-week">—</div>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">All Assessments</div>
+        <div class="section-count" id="table-count"></div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Industry</th>
+                    <th>Employees</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr><td colspan="6" class="table-loading">Loading assessments&hellip;</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+(function() {
+    function esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(String(str)));
+        return d.innerHTML;
+    }
+
+    function formatDate(isoStr) {
+        if (!isoStr) return '—';
+        return new Date(isoStr).toLocaleString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: 'numeric', minute: '2-digit'
+        });
+    }
+
+    function statusBadge(status) {
+        return '<span class="status-badge status-' + esc(status) + '">' + esc(status) + '</span>';
+    }
+
+    let expandedId = null;
+
+    function toggleDetail(id) {
+        if (expandedId === id) {
+            const row = document.getElementById('detail-' + id);
+            if (row) row.remove();
+            expandedId = null;
+            return;
+        }
+        if (expandedId !== null) {
+            const prev = document.getElementById('detail-' + expandedId);
+            if (prev) prev.remove();
+        }
+        expandedId = id;
+
+        fetch('/api/admin/assessments/' + id, { credentials: 'include' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                const a = data.assessment;
+                const mainRow = document.getElementById('row-' + id);
+                if (!mainRow) return;
+
+                const detailRow = document.createElement('tr');
+                detailRow.id = 'detail-' + id;
+                detailRow.className = 'detail-row';
+                detailRow.innerHTML = '<td colspan="6">' +
+                    '<div class="detail-content">' +
+                    '<div class="detail-grid">' +
+                    '<div class="detail-block"><label>Pain Points</label><p>' + esc(a.pain_points || '—') + '</p></div>' +
+                    '<div class="detail-block"><label>Current Tools</label><p>' + esc(a.current_tools || '—') + '</p></div>' +
+                    '<div class="detail-block"><label>Contact</label><p>' + esc(a.contact_name || '—') + ' &bull; ' + esc(a.contact_email || '—') + '</p></div>' +
+                    '<div class="detail-block"><label>Additional Context</label><p>' + esc(a.additional_context || '—') + '</p></div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</td>';
+
+                mainRow.after(detailRow);
+            })
+            .catch(function() {
+                expandedId = null;
+            });
+    }
+
+    window.toggleDetail = toggleDetail;
+
+    function load() {
+        fetch('/api/admin/assessments', { credentials: 'include' })
+            .then(function(r) {
+                if (r.status === 401 || r.status === 403) {
+                    window.location.href = '/admin';
+                    return null;
+                }
+                return r.json();
+            })
+            .then(function(data) {
+                if (!data) return;
+
+                const assessments = data.assessments || [];
+                const now = new Date();
+                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+                const total = assessments.length;
+                const complete = assessments.filter(function(a) { return a.status === 'complete'; }).length;
+                const processing = assessments.filter(function(a) { return a.status === 'processing' || a.status === 'pending'; }).length;
+                const week = assessments.filter(function(a) { return new Date(a.created_at) >= weekAgo; }).length;
+
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-complete').textContent = complete;
+                document.getElementById('stat-processing').textContent = processing;
+                document.getElementById('stat-week').textContent = week;
+                document.getElementById('table-count').textContent = total + ' total';
+
+                const tbody = document.getElementById('table-body');
+
+                if (assessments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><h3>No assessments yet</h3><p>Submitted assessments will appear here.</p></div></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = assessments.map(function(a) {
+                    const reportLink = a.status === 'complete'
+                        ? '<a href="/report/' + esc(String(a.id)) + '" class="action-link" target="_blank">View Report</a>'
+                        : '<span class="action-link disabled">No Report</span>';
+
+                    return '<tr id="row-' + esc(String(a.id)) + '">' +
+                        '<td>' +
+                        '<div class="company-name">' + esc(a.company_name) + '</div>' +
+                        '<div class="company-contact">' + esc(a.contact_email || 'No email provided') + '</div>' +
+                        '</td>' +
+                        '<td>' + esc(a.industry) + '</td>' +
+                        '<td>' + esc(String(a.employee_count)) + '</td>' +
+                        '<td>' + statusBadge(a.status) + '</td>' +
+                        '<td class="date-cell">' + esc(formatDate(a.created_at)) + '</td>' +
+                        '<td>' + reportLink + ' &nbsp; <a href="#" class="action-link" onclick="event.preventDefault(); toggleDetail(' + a.id + ')">Details</a></td>' +
+                        '</tr>';
+                }).join('');
+            })
+            .catch(function(err) {
+                document.getElementById('table-body').innerHTML =
+                    '<tr><td colspan="6" class="table-loading">Failed to load assessments.</td></tr>';
+            });
+    }
+
+    async function logout() {
+        await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/admin';
+    }
+
+    window.logout = logout;
+
+    load();
+    // Auto-refresh every 30 seconds
+    setInterval(load, 30000);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access — MaxYield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --forge-orange: #E8721C;
+            --forge-dark: #0A0A0A;
+            --forge-charcoal: #141414;
+            --forge-slate: #1E1E1E;
+            --forge-steel: #2A2A2A;
+            --text-primary: #F0EDE8;
+            --text-secondary: #9A9590;
+            --text-dim: #605C57;
+        }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--forge-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 48px 40px;
+            background: var(--forge-charcoal);
+            border: 1px solid var(--forge-steel);
+            margin: 20px;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 32px;
+            display: block;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .logo span { color: var(--forge-orange); }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .field { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            background: var(--forge-slate);
+            border: 1px solid var(--forge-steel);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="password"]:focus {
+            border-color: rgba(232,114,28,0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--forge-orange);
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            padding: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover { background: #d4651a; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .error {
+            background: rgba(220,38,38,0.1);
+            border: 1px solid rgba(220,38,38,0.3);
+            color: #f87171;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <a href="/" class="logo">Max<span>Yield</span></a>
+        <h2>Admin Access</h2>
+        <p class="sub">For MaxYield team use only.</p>
+
+        <form id="login-form">
+            <div class="field">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter admin password" autofocus>
+            </div>
+            <button type="submit" class="submit-btn" id="submit-btn">Sign In</button>
+            <div class="error" id="error-msg">Incorrect password. Try again.</div>
+        </form>
+    </div>
+
+    <script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('submit-btn');
+        const err = document.getElementById('error-msg');
+        err.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Signing in\u2026';
+
+        try {
+            const resp = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            if (resp.ok) {
+                window.location.href = '/admin/dashboard';
+            } else {
+                err.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        } catch(ex) {
+            err.textContent = 'Network error. Please try again.';
+            err.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+        }
+    });
+    </script>
+</body>
+</html>

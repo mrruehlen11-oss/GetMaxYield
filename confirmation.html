@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation Confirmed — MaxYield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --forge-orange: #E8721C; --forge-amber: #F5A623; --forge-dark: #0A0A0A; --forge-charcoal: #141414; --forge-slate: #1E1E1E; --forge-steel: #2A2A2A; --text-primary: #F0EDE8; --text-secondary: #9A9590; --text-dim: #605C57; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--forge-dark); color: var(--text-primary); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+        nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.95); border-bottom: 1px solid rgba(232,114,28,0.08); }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .logo span { color: var(--forge-orange); }
+
+        main { max-width: 650px; margin: 0 auto; padding: 100px 40px; text-align: center; }
+
+        .check-circle { width: 80px; height: 80px; border-radius: 50%; background: rgba(34,197,94,0.1); border: 3px solid #22c55e; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; }
+        .check-circle svg { width: 36px; height: 36px; stroke: #22c55e; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+        h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -1px; margin-bottom: 16px; }
+        h1 em { font-style: normal; color: var(--forge-orange); }
+
+        .desc { font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); max-width: 500px; margin: 0 auto 48px; }
+
+        .next-steps { text-align: left; background: var(--forge-charcoal); border: 1px solid var(--forge-steel); padding: 40px; margin-bottom: 40px; }
+        .next-steps h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.3px; }
+        .step { display: flex; gap: 16px; margin-bottom: 20px; }
+        .step:last-child { margin-bottom: 0; }
+        .step-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--forge-orange); background: rgba(232,114,28,0.1); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: 1px; }
+        .step-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .step-text p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .report-link { display: inline-block; font-size: 0.92rem; color: var(--forge-orange); text-decoration: none; padding: 12px 24px; border: 1px solid rgba(232,114,28,0.3); transition: all 0.2s; }
+        .report-link:hover { background: rgba(232,114,28,0.05); border-color: var(--forge-orange); }
+
+        .footer-note { font-size: 0.78rem; color: var(--text-dim); margin-top: 40px; }
+
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            main { padding: 60px 20px; }
+            .next-steps { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Max<span>Yield</span></a>
+</nav>
+
+<main>
+    <div class="check-circle">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+
+    <h1>Implementation <em>confirmed</em>.</h1>
+    <p class="desc">Your on-site implementation engagement has been secured. Our team is preparing to bring your efficiency improvements to life.</p>
+
+    <div class="next-steps">
+        <h3>What Happens Next</h3>
+        <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-text">
+                <h4>Scheduling Call (within 24 hours)</h4>
+                <p>A MaxYield team lead will contact you to confirm dates, discuss logistics, and answer any questions about the engagement.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-text">
+                <h4>Pre-Engagement Preparation</h4>
+                <p>We'll review your full assessment report and prepare a detailed implementation plan tailored to your facility and team.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-text">
+                <h4>On-Site Arrival (2-week engagement)</h4>
+                <p>Our team arrives ready to work. Expect measurable improvements documented before we leave, plus 30 days of remote follow-up support.</p>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="report-link" id="report-link">View Your Full Report &rarr;</a>
+
+    <p class="footer-note">A confirmation email has been sent. For questions, reach out to your MaxYield team lead directly.</p>
+</main>
+
+<script>
+(function() {
+    var pathParts = window.location.pathname.split('/');
+    var assessmentId = pathParts[pathParts.length - 1];
+    var reportLink = document.getElementById('report-link');
+    if (assessmentId) reportLink.href = '/report/' + assessmentId;
+})();
+</script>
+
+</body>
+</html>

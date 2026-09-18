@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SteadyForge — Operations Efficiency, Forged Right</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --forge-orange: #E8721C;
+            --forge-amber: #F5A623;
+            --forge-dark: #0A0A0A;
+            --forge-charcoal: #141414;
+            --forge-slate: #1E1E1E;
+            --forge-steel: #2A2A2A;
+            --text-primary: #F0EDE8;
+            --text-secondary: #9A9590;
+            --text-dim: #605C57;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--forge-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,10,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(232,114,28,0.08);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--forge-orange);
+        }
+
+        .nav-tagline {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 140px 40px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(232,114,28,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(232,114,28,0.2), transparent);
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--forge-orange);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            max-width: 900px;
+            margin-bottom: 32px;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--forge-orange);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin-bottom: 48px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            border-left: 2px solid var(--forge-orange);
+            padding-left: 16px;
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* PHILOSOPHY SECTION */
+        .philosophy {
+            padding: 120px 40px;
+            background: var(--forge-charcoal);
+            position: relative;
+        }
+
+        .philosophy::before {
+            content: '"';
+            position: absolute;
+            top: 60px;
+            left: 30px;
+            font-family: 'Space Grotesk', serif;
+            font-size: 12rem;
+            color: rgba(232,114,28,0.06);
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .philosophy-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .philosophy blockquote {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        .philosophy blockquote span {
+            color: var(--forge-orange);
+        }
+
+        .philosophy p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* HOW IT WORKS */
+        .process {
+            padding: 120px 40px;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--forge-orange);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 64px;
+            max-width: 600px;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2px;
+            max-width: 1200px;
+        }
+
+        .process-card {
+            background: var(--forge-charcoal);
+            padding: 48px 36px;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .process-card:hover {
+            background: var(--forge-slate);
+        }
+
+        .process-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: rgba(232,114,28,0.12);
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .process-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .process-card p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        /* SERVICES */
+        .services {
+            padding: 120px 40px;
+            background: var(--forge-charcoal);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1000px;
+            margin-top: 64px;
+        }
+
+        .service-item {
+            padding: 40px;
+            border: 1px solid var(--forge-steel);
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .service-item:hover {
+            border-color: rgba(232,114,28,0.3);
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 40px;
+            background: var(--forge-orange);
+        }
+
+        .service-item h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .service-item p {
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .service-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--forge-orange);
+            border: 1px solid rgba(232,114,28,0.3);
+            padding: 4px 10px;
+            margin-top: 16px;
+        }
+
+        /* GUARANTEE */
+        .guarantee {
+            padding: 120px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .guarantee::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(232,114,28,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .guarantee-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .guarantee h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        .guarantee h2 em {
+            font-style: normal;
+            color: var(--forge-orange);
+        }
+
+        .guarantee p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .guarantee-line {
+            width: 60px;
+            height: 2px;
+            background: var(--forge-orange);
+            margin: 40px auto;
+        }
+
+        .guarantee-small {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* CLOSING */
+        .closing {
+            padding: 120px 40px 80px;
+            background: var(--forge-charcoal);
+            text-align: center;
+        }
+
+        .closing h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .closing p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid var(--forge-steel);
+        }
+
+        footer p {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        footer .footer-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            nav { padding: 16px 20px; }
+            .nav-tagline { display: none; }
+            .hero { padding: 120px 20px 60px; }
+            .hero-stats { gap: 32px; }
+            .philosophy { padding: 80px 20px; }
+            .process { padding: 80px 20px; }
+            .services { padding: 80px 20px; }
+            .services-grid { grid-template-columns: 1fr; gap: 20px; }
+            .guarantee { padding: 80px 20px; }
+            .closing { padding: 80px 20px 60px; }
+            .process-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { letter-spacing: -1px; }
+            .hero-stats { flex-direction: column; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Steady<span>Forge</span></div>
+        <a href="/assess" style="background:var(--forge-orange);color:white;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:0.85rem;padding:10px 20px;text-decoration:none;letter-spacing:-0.2px;transition:background 0.2s;" onmouseover="this.style.background='#d4651a'" onmouseout="this.style.background='var(--forge-orange)'">Free Assessment &rarr;</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-label">Operations Efficiency Consulting</div>
+        <h1>Your operation has <em>hidden margin</em>. We find it.</h1>
+        <p class="hero-sub">SteadyForge uses AI-powered analysis to diagnose inefficiencies in manufacturing, construction, and industrial operations, then deploys experienced operators to implement the fix. Remote-first. Results-guaranteed.</p>
+        <div style="margin-bottom:48px;">
+            <a href="/assess" style="display:inline-block;background:var(--forge-orange);color:white;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;padding:18px 40px;text-decoration:none;letter-spacing:-0.2px;margin-right:16px;margin-bottom:12px;transition:background 0.2s;" onmouseover="this.style.background='#d4651a'" onmouseout="this.style.background='var(--forge-orange)'">Get Your Free Assessment &rarr;</a>
+            <span style="font-size:0.82rem;color:var(--text-dim);">Takes 2 minutes. Report in 90 seconds.</span>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">$134.7B</div>
+                <div class="stat-label">Operations consulting market</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">15-30%</div>
+                <div class="stat-label">Typical cost reduction</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">2 weeks</div>
+                <div class="stat-label">On-site engagement</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="philosophy">
+        <div class="philosophy-inner">
+            <blockquote>Slow is <span>smooth</span>.<br>Smooth is <span>fast</span>.</blockquote>
+            <p>A Navy SEAL principle. The fastest path to operational excellence isn't rushing to implement changes. It's methodical assessment, precise diagnosis, and deliberate execution. That's the SteadyForge way. We move with purpose so you can move with speed.</p>
+        </div>
+    </section>
+
+    <section class="process">
+        <div class="section-label">How It Works</div>
+        <h2 class="section-title">Three phases. Zero wasted motion.</h2>
+        <div class="process-grid">
+            <div class="process-card">
+                <div class="process-number">01</div>
+                <h3>Remote AI Assessment</h3>
+                <p>Our AI analyzes your operational data, workflows, and production metrics to build a complete picture of where efficiency is being lost. No site visit required for this phase.</p>
+            </div>
+            <div class="process-card">
+                <div class="process-number">02</div>
+                <h3>Diagnosis & Roadmap</h3>
+                <p>You receive a plain-language report with prioritized recommendations, projected ROI for each change, and a clear implementation timeline. No jargon, no fluff.</p>
+            </div>
+            <div class="process-card">
+                <div class="process-number">03</div>
+                <h3>On-Site Implementation</h3>
+                <p>Our team arrives for a focused 2-week engagement. We work alongside your people to implement changes, train staff, and verify results before we leave.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="services">
+        <div class="section-label">What We Optimize</div>
+        <h2 class="section-title">Built for companies that make things.</h2>
+        <div class="services-grid">
+            <div class="service-item">
+                <h3>Manufacturing Plants</h3>
+                <p>Production line efficiency, throughput optimization, waste reduction, equipment utilization, and shift scheduling. We find the 15-30% you're leaving on the table.</p>
+                <div class="service-tag">Production</div>
+            </div>
+            <div class="service-item">
+                <h3>Construction Operations</h3>
+                <p>Project scheduling, resource allocation, supply chain timing, crew productivity, and equipment deployment. Less downtime, more margin per project.</p>
+                <div class="service-tag">Field Ops</div>
+            </div>
+            <div class="service-item">
+                <h3>Warehouse & Distribution</h3>
+                <p>Inventory flow, picking routes, storage optimization, loading dock efficiency, and labor planning. Every minute saved compounds across thousands of orders.</p>
+                <div class="service-tag">Logistics</div>
+            </div>
+            <div class="service-item">
+                <h3>Industrial Services</h3>
+                <p>Maintenance scheduling, asset lifecycle management, safety compliance workflows, and contractor coordination. Operational discipline that protects your bottom line.</p>
+                <div class="service-tag">Maintenance</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="guarantee">
+        <div class="guarantee-inner">
+            <div class="section-label">Our Promise</div>
+            <h2>We guarantee <em>results</em>, or you don't pay.</h2>
+            <p>Every engagement comes with a hold harmless agreement written in plain English. We stand behind our recommendations. If you implement every step and efficiency doesn't improve, our liability is capped and your risk is near zero.</p>
+            <div class="guarantee-line"></div>
+            <p class="guarantee-small">Contracts in layman's terms. No legal gymnastics. You'll understand every word you sign.</p>
+        </div>
+    </section>
+
+    <section class="closing">
+        <h2>The companies that win aren't the ones that move fastest. They're the ones that move smoothest.</h2>
+        <p>SteadyForge is building the future of operations consulting: AI-powered, results-guaranteed, and priced for the companies the big firms ignore.</p>
+        <div style="margin-top:40px;">
+            <a href="/assess" style="display:inline-block;background:var(--forge-orange);color:white;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;padding:16px 36px;text-decoration:none;letter-spacing:-0.2px;transition:background 0.2s;" onmouseover="this.style.background='#d4651a'" onmouseout="this.style.background='var(--forge-orange)'">Start Your Free Assessment &rarr;</a>
+            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:12px;">Free. No account required. AI-generated report in 90 seconds.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p class="footer-brand">SteadyForge</p>
+        <p>&copy; 2026 SteadyForge. Operations efficiency, forged right.</p>
+    </footer>
+
+
+    <!-- Polsia Analytics -->
+    <script>
+    (function() {
+        var slug = 'steadyforge';
+        if (!slug) return;
+        var vid = localStorage.getItem('polsia_vid');
+        if (!vid) {
+            vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem('polsia_vid', vid);
+        }
+        new Image().src = 'https://polsia.com/api/beacon/pixel?s=' + encodeURIComponent(slug) + '&v=' + encodeURIComponent(vid);
+    })();
+    </script>
+</body>
+</html>
